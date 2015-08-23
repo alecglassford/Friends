@@ -1,8 +1,12 @@
 var distanceCalculator = function(link, index) {
-  return 200/link.value;
+  return 4000/Math.pow(link.value, 1.5);
 }
 
-var width = 1000,
+var strengthCalculator = function(link, index) {
+  return link.value/32;
+}
+
+var width = 1200,
     height = 800
 
 var svg = d3.select('body').append('svg')
@@ -13,9 +17,9 @@ var force = d3.layout.force()
     .gravity(.05)
     .charge(-100)
     .friction(.2)
-    .linkStrength(.1)
     .size([width, height])
-    .linkDistance(distanceCalculator);
+    .linkDistance(distanceCalculator)
+    .linkStrength(strengthCalculator);
 
 d3.json('graph.json', function(error, json) {
   if (error) throw error;

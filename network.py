@@ -17,12 +17,20 @@ def loadRelationships(people):
     random.shuffle(relationships)
     return relationships
 
+def knowEachOther(relationship):
+    return not raw_input("Hit enter if these people know each other {}, anything else otherwise".format(relationship))
+
 def rankRelationships(relationships):
     ranking = []
-    ranking.append([relationships.pop()])
+    while (True):
+        first = relationships.pop()
+        if knowEachOther(first):
+            ranking.append([first])
+            break
     while (relationships):
         current = relationships.pop()
-        placeRelationship(current, ranking, 0, len(ranking) - 1)
+        if knowEachOther(current):
+            placeRelationship(current, ranking, 0, len(ranking) - 1)
     return ranking
 
 def placeRelationship(current, ranking, strongest, weakest):
@@ -46,6 +54,14 @@ def placeRelationship(current, ranking, strongest, weakest):
 def nodify(person):
     return {'name': person}
 
+def makeLinks(people, ranking):
+    result = []
+    index = dict(zip(people, range(len(people))))
+    for value, relationships in enumerate(reversed(ranking), start=1):
+        for relationship in relationships:
+            result.append({'source': index[relationship[0]], 'target': index[relationship[1]], 'value': value})
+    return result
+
 if __name__ == '__main__':
     people = loadPeople()
     print people
@@ -55,3 +71,5 @@ if __name__ == '__main__':
 
     output = {}
     output['nodes'] = map(nodify, people)
+    output['links'] = makeLinks(people, ranking)
+    print json.dumps(output)
