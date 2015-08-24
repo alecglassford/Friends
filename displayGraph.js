@@ -1,16 +1,36 @@
 var distanceCalculator = function(link, index) {
-  return 4000/Math.pow(link.value, 1.5);
+  return distanceScale(link.value);
 }
 
 var strengthCalculator = function(link, index) {
   return link.value/32;
 }
 
-var width = 1200,
-    height = 800
+var distanceScale = d3.scale.pow().exponent(2)
+                      .domain([1,16])
+                      .range([700,50]);
+
+var colorScale = d3.scale.linear()
+                   .domain([1, 16])
+                   .range(['LightBlue', 'MidnightBlue']);
+
+var strokeWidthScale = d3.scale.linear()
+                         .domain([1, 16])
+                         .range([1, 4]);
+
+var colorCalculator = function(d) {
+  return colorScale(d.value);
+};
+
+var strokeWidthCalculator = function(d) {
+  return strokeWidthScale(d.value);
+}
+
+var width = 1400,
+    height = 700
 
 var svg = d3.select('body').append('svg')
-    .attr('width', width)
+    .attr('width', '100%')
     .attr('height', height);
 
 var force = d3.layout.force()
@@ -32,7 +52,9 @@ d3.json('graph.json', function(error, json) {
   var link = svg.selectAll('.link')
       .data(json.links)
     .enter().append('line')
-      .attr('class', 'link');
+      .attr('class', 'link')
+      .style('stroke', colorCalculator)
+      .style('stroke-width', strokeWidthCalculator);
 
   var node = svg.selectAll('.node')
       .data(json.nodes)
