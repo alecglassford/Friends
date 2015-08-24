@@ -1,22 +1,28 @@
-var distanceCalculator = function(link, index) {
-  return distanceScale(link.value);
-}
-
-var strengthCalculator = function(link, index) {
-  return link.value/32;
-}
+var scaleDomain = [1, 23];
 
 var distanceScale = d3.scale.pow().exponent(2)
-                      .domain([1,16])
+                      .domain(scaleDomain)
                       .range([700,50]);
 
+var strengthScale = d3.scale.pow().exponent(2)
+                      .domain(scaleDomain)
+                      .range([0, 1]);
+
 var colorScale = d3.scale.linear()
-                   .domain([1, 16])
+                   .domain(scaleDomain)
                    .range(['LightBlue', 'MidnightBlue']);
 
 var strokeWidthScale = d3.scale.linear()
-                         .domain([1, 16])
+                         .domain(scaleDomain)
                          .range([1, 4]);
+
+var distanceCalculator = function(link, index) {
+ return distanceScale(link.value);
+};
+
+var strengthCalculator = function(link, index) {
+  return strengthScale(link.value);
+};
 
 var colorCalculator = function(d) {
   return colorScale(d.value);
@@ -24,7 +30,7 @@ var colorCalculator = function(d) {
 
 var strokeWidthCalculator = function(d) {
   return strokeWidthScale(d.value);
-}
+};
 
 var width = 1400,
     height = 700

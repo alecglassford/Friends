@@ -2,7 +2,7 @@
 
 """Generate a visual representation of a social network"""
 
-from itertools import combinations
+from itertools import combinations, chain
 import random
 from collections import deque
 import json
@@ -17,21 +17,39 @@ def loadRelationships(people):
     random.shuffle(relationships)
     return relationships
 
-def knowEachOther(relationship):
+def acquainted(relationship):
     return not raw_input("Hit enter if these people know each other {}, anything else otherwise".format(relationship))
 
 def rankRelationships(relationships):
-    ranking = []
-    while (True):
-        first = relationships.pop()
-        if knowEachOther(first):
-            ranking.append([first])
-            break
+    ranking, unacquainted = loadSaved(relationships)
+    if not ranking:
+        while (True):
+            first = relationships.pop()
+            if acquainted(first):
+                ranking.append([first])
+                break
     while (relationships):
         current = relationships.pop()
-        if knowEachOther(current):
+        if acquainted(current):
             placeRelationship(current, ranking, 0, len(ranking) - 1)
-    return ranking
+        else:
+            unacquainted.append(current)
+    return ranking, unacquainted
+
+def loadSaved(relationships):
+    inputPath = 'ranking.txt'
+    with open(inputPath, 'r') as inputFile:
+        ranking = eval(inputFile.read())
+    for relationship in chain.from_iterable(ranking):# For each ranked relationship
+        relationships.remove(relationship) # Since it's already in the ranking
+
+    unacquaintedPath = 'unacquainted.txt'
+    with open(unacquaintedPath, 'r') as unacquaintedFile:
+        unacquainted = eval(unacquaintedFile.read())
+    for relationship in unacquainted:
+        relationships.remove(relationship)
+
+    return ranking, unacquainted
 
 def placeRelationship(current, ranking, strongest, weakest):
     comparisonIndex = (strongest + weakest) / 2
@@ -64,12 +82,13 @@ def makeLinks(people, ranking):
 
 if __name__ == '__main__':
     people = loadPeople()
-    print people
+    print people, '\n'
     relationships = loadRelationships(people)
-    ranking = rankRelationships(relationships)
-    print ranking
+    ranking, unacquainted = rankRelationships(relationships)
+    print 'ranking:\n', ranking, '\n'
+    print 'unacuqinted:\n', unacquainted, '\n'
 
     output = {}
     output['nodes'] = map(nodify, people)
     output['links'] = makeLinks(people, ranking)
-    print json.dumps(output)
+    print 'json:\n', json.dumps(output)
