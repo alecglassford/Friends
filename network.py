@@ -72,9 +72,11 @@ def placeRelationship(current, ranking, strongest, weakest):
 def nodify(person):
     return {'name': person}
 
-def makeLinks(people, ranking):
-    result = []
+def makeLinks(people, ranking, unacquainted):
     index = dict(zip(people, range(len(people))))
+
+    result = [{'source': index[relationship[0]], 'target': index[relationship[1]], 'value': 0} \
+                for relationship in unacquainted]
     for value, relationships in enumerate(reversed(ranking), start=1):
         for relationship in relationships:
             result.append({'source': index[relationship[0]], 'target': index[relationship[1]], 'value': value})
@@ -86,9 +88,9 @@ if __name__ == '__main__':
     relationships = loadRelationships(people)
     ranking, unacquainted = rankRelationships(relationships)
     print 'ranking:\n', ranking, '\n'
-    print 'unacuqinted:\n', unacquainted, '\n'
+    print 'unacquainted:\n', unacquainted, '\n'
 
     output = {}
     output['nodes'] = map(nodify, people)
-    output['links'] = makeLinks(people, ranking)
+    output['links'] = makeLinks(people, ranking, unacquainted)
     print 'json:\n', json.dumps(output)

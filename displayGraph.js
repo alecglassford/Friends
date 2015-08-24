@@ -1,20 +1,21 @@
-var scaleDomain = [1, 23];
+var scaleDomain = [0, 26];
+var threeDomain = [0, 14, 26];
 
 var distanceScale = d3.scale.pow().exponent(2)
                       .domain(scaleDomain)
-                      .range([700,50]);
+                      .range([500,50]);
 
 var strengthScale = d3.scale.pow().exponent(2)
-                      .domain(scaleDomain)
-                      .range([0, 1]);
+                      .domain(threeDomain)
+                      .range([1, 0, .5]);
 
-var colorScale = d3.scale.linear()
+var colorScale = d3.scale.pow().exponent(2)
                    .domain(scaleDomain)
-                   .range(['LightBlue', 'MidnightBlue']);
+                   .range(['LightCyan', 'MidnightBlue']);
 
-var strokeWidthScale = d3.scale.linear()
+var strokeWidthScale = d3.scale.pow().exponent(1)
                          .domain(scaleDomain)
-                         .range([1, 4]);
+                         .range([0, 10]);
 
 var distanceCalculator = function(link, index) {
  return distanceScale(link.value);
